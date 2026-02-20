@@ -33,6 +33,9 @@ tailwind.config = {
 </script>
 
 <style>
+html {
+  scroll-behavior: smooth;
+}
 body::before {
   content: "";
   position: fixed;
@@ -43,7 +46,327 @@ body::before {
   pointer-events: none;
   z-index: 0;
 }
+
+.page {
+  display: none;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-link {
+  cursor: pointer;
+  position: relative;
+  padding-bottom: 2px;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #5D7052;
+}
+
+.nav-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #5D7052;
+  border-radius: 1px;
+}
+
+/* Mobile Menu */
+#mobile-menu {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 40;
+  animation: fadeIn 0.3s ease;
+}
+
+#mobile-menu.active {
+  display: block;
+}
+
+.mobile-menu-content {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 80%;
+  height: 100%;
+  background: white;
+  z-index: 50;
+  padding: 20px;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.mobile-nav-link {
+  display: block;
+  padding: 12px 0;
+  cursor: pointer;
+  font-weight: 600;
+  color: #5D7052;
+  border-bottom: 1px solid #f0ebe5;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-link:hover {
+  padding-left: 10px;
+  background: #f0ebe5;
+}
+
+/* Scroll to Top Button */
+#scroll-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: #5D7052;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+  box-shadow: 0_4px_15px_-2px_rgba(93,112,82,0.3);
+  transition: all 0.3s ease;
+  font-size: 24px;
+}
+
+#scroll-to-top.show {
+  display: flex;
+}
+
+#scroll-to-top:hover {
+  transform: translateY(-5px);
+  box-shadow: 0_8px_25px_-5px_rgba(93,112,82,0.4);
+  background: #4a5640;
+}
+
+/* Page Navigation Buttons */
+.page-nav {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  padding: 40px 20px;
+  flex-wrap: wrap;
+}
+
+.page-nav button {
+  padding: 12px 24px;
+  border-radius: 9999px;
+  border: 2px solid #5D7052;
+  color: #5D7052;
+  background: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.page-nav button:hover {
+  background: #5D7052;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Hamburger Menu Icon */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 6px;
+  width: 30px;
+}
+
+.hamburger span {
+  width: 100%;
+  height: 3px;
+  background: #5D7052;
+  border-radius: 2px;
+  transition: 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(10px, 10px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+}
+
+/* Enhanced Button Styles */
+button {
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.1);
+  transition: left 0.3s ease;
+  z-index: 0;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+/* Enhanced Input Styling */
+input, select {
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 8px -2px rgba(0,0,0,0.05) !important;
+}
+
+input:focus, select:focus {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 20px -5px rgba(93,112,82,0.2) !important;
+}
 </style>
+</style>
+
+<script>
+function navigateTo(page) {
+  // Close mobile menu if open
+  const mobileMenu = document.getElementById('mobile-menu');
+  if (mobileMenu) {
+    mobileMenu.classList.remove('active');
+    const hamburger = document.querySelector('.hamburger');
+    if (hamburger) {
+      hamburger.classList.remove('active');
+    }
+  }
+
+  // Hide all pages
+  const pages = document.querySelectorAll('.page');
+  pages.forEach(p => p.classList.remove('active'));
+  
+  // Remove active class from nav links
+  const navLinks = document.querySelectorAll('.nav-link');
+  navLinks.forEach(link => link.classList.remove('active'));
+  
+  // Show the selected page
+  const targetPage = document.getElementById('page-' + page);
+  if (targetPage) {
+    targetPage.classList.add('active');
+  }
+  
+  // Add active class to clicked link
+  if (event && event.target) {
+    event.target.classList.add('active');
+  }
+  
+  // Scroll to top
+  window.scrollTo(0, 0);
+}
+
+function toggleMobileMenu() {
+  const mobileMenu = document.getElementById('mobile-menu');
+  const hamburger = document.querySelector('.hamburger');
+  if (mobileMenu && hamburger) {
+    mobileMenu.classList.toggle('active');
+    hamburger.classList.toggle('active');
+  }
+}
+
+function closeMobileMenu() {
+  const mobileMenu = document.getElementById('mobile-menu');
+  const hamburger = document.querySelector('.hamburger');
+  if (mobileMenu && hamburger) {
+    mobileMenu.classList.remove('active');
+    hamburger.classList.remove('active');
+  }
+}
+
+// Scroll to Top Button Handler
+window.addEventListener('scroll', function() {
+  const scrollBtn = document.getElementById('scroll-to-top');
+  if (scrollBtn) {
+    if (window.pageYOffset > 300) {
+      scrollBtn.classList.add('show');
+    } else {
+      scrollBtn.classList.remove('show');
+    }
+  }
+});
+
+// Scroll to Top Button Click
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
+
+// Initialize with home page on load
+window.addEventListener('load', function() {
+  const homePage = document.getElementById('page-home');
+  if (homePage) {
+    homePage.classList.add('active');
+  }
+  const homeLinks = document.querySelectorAll('[onclick*="navigateTo(\'home\')"]');
+  if (homeLinks.length > 0) {
+    homeLinks[0].classList.add('active');
+  }
+
+  // Close mobile menu when clicking outside
+  document.addEventListener('click', function(event) {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const hamburger = document.querySelector('.hamburger');
+    const nav = document.querySelector('nav');
+    
+    if (mobileMenu && !mobileMenu.contains(event.target) && !hamburger.contains(event.target)) {
+      closeMobileMenu();
+    }
+  });
+});
+</script>
 
 </head>
 
@@ -51,16 +374,44 @@ body::before {
 
 <!-- NAVIGATION -->
 <nav class="sticky top-4 z-50 max-w-6xl mx-auto bg-white/70 backdrop-blur-md rounded-full border border-border/50 shadow-[0_4px_20px_-2px_rgba(93,112,82,0.15)] px-6 py-3 flex justify-between items-center mt-4">
-  <div class="flex items-center gap-3">
+  <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('home')">
     <div class="h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">B</div>
     <span class="font-heading font-bold text-lg">BuildSmart</span>
   </div>
-  <div class="hidden md:flex gap-6 text-sm">
-    <a href="#" class="hover:text-primary transition">Services</a>
-    <a href="#" class="hover:text-primary transition">Directory</a>
-    <a href="#" class="hover:text-primary transition">Contact</a>
+  <div class="hidden md:flex gap-8 text-sm font-semibold">
+    <span class="nav-link" onclick="navigateTo('home')">Home</span>
+    <span class="nav-link" onclick="navigateTo('directory')">Find Professionals</span>
+    <span class="nav-link" onclick="navigateTo('professional')">Enroll as Professional</span>
+    <span class="nav-link" onclick="navigateTo('firm')">Register Your Firm</span>
+    <span class="nav-link" onclick="navigateTo('contact')">Contact</span>
+  </div>
+  <div class="hamburger" onclick="toggleMobileMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
   </div>
 </nav>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu" onclick="closeMobileMenu()">
+  <div class="mobile-menu-content" onclick="event.stopPropagation()">
+    <div class="flex items-center gap-3 cursor-pointer mb-8" onclick="navigateTo('home')">
+      <div class="h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">B</div>
+      <span class="font-heading font-bold text-lg">BuildSmart</span>
+    </div>
+    <span class="mobile-nav-link" onclick="navigateTo('home')">Home</span>
+    <span class="mobile-nav-link" onclick="navigateTo('directory')">Find Professionals</span>
+    <span class="mobile-nav-link" onclick="navigateTo('professional')">Enroll as Professional</span>
+    <span class="mobile-nav-link" onclick="navigateTo('firm')">Register Your Firm</span>
+    <span class="mobile-nav-link" onclick="navigateTo('contact')">Contact</span>
+  </div>
+</div>
+
+<!-- SCROLL TO TOP BUTTON -->
+<button id="scroll-to-top" onclick="scrollToTop()">↑</button>
+
+<!-- PAGE: HOME -->
+<div id="page-home" class="page">
 
 <!-- HERO -->
 <section class="py-32 px-6 relative overflow-hidden text-center">
@@ -76,11 +427,11 @@ body::before {
     </p>
 
     <div class="flex justify-center gap-4 flex-wrap">
-      <button class="bg-primary text-white rounded-full px-10 h-14 font-semibold shadow-[0_4px_20px_-2px_rgba(93,112,82,0.15)] hover:scale-105 hover:shadow-[0_6px_24px_-4px_rgba(93,112,82,0.25)] active:scale-95 transition-all duration-300">
+      <button class="bg-primary text-white rounded-full px-10 h-14 font-semibold shadow-[0_4px_20px_-2px_rgba(93,112,82,0.15)] hover:scale-105 hover:shadow-[0_6px_24px_-4px_rgba(93,112,82,0.25)] active:scale-95 transition-all duration-300" onclick="navigateTo('directory')">
         Find Professionals
       </button>
-      <button class="border-2 border-secondary text-secondary rounded-full px-10 h-14 font-semibold hover:bg-secondary hover:text-white transition-all duration-300">
-        List Your Service
+      <button class="border-2 border-secondary text-secondary rounded-full px-10 h-14 font-semibold hover:bg-secondary hover:text-white transition-all duration-300" onclick="navigateTo('professional')">
+        Enroll Now
       </button>
     </div>
   </div>
@@ -92,19 +443,581 @@ body::before {
     <h2 class="font-heading text-4xl font-bold mb-8">Search Professionals</h2>
     <div class="flex flex-col md:flex-row gap-4 justify-center">
       <input type="text" placeholder="Enter Location"
-        class="h-12 px-6 rounded-full border border-border bg-white/50 focus-visible:ring-2 ring-primary/30 ring-offset-2 outline-none transition"/>
-      <select class="h-12 px-6 rounded-full border border-border bg-white/50 focus-visible:ring-2 ring-primary/30 ring-offset-2 outline-none transition">
+        class="h-12 px-6 rounded-full border border-border bg-white focus-visible:ring-2 ring-primary/30 ring-offset-2 outline-none transition shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)]"/>
+      <select class="h-12 px-6 rounded-full border border-border bg-white focus-visible:ring-2 ring-primary/30 ring-offset-2 outline-none transition shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)]">
         <option>Architect</option>
         <option>Contractor</option>
         <option>Interior Designer</option>
         <option>Plumber</option>
       </select>
-      <button class="bg-primary text-white rounded-full px-8 h-12 font-semibold hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_20px_-2px_rgba(93,112,82,0.15)]">
+      <button class="bg-primary text-white rounded-full px-8 h-12 font-semibold hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_20px_-2px_rgba(93,112,82,0.15)]" onclick="navigateTo('directory')">
         Search
       </button>
     </div>
   </div>
 </section>
+
+<!-- Page Navigation -->
+<div class="page-nav">
+  <button onclick="navigateTo('directory')">Find Professionals →</button>
+  <button onclick="navigateTo('professional')">Enroll as Professional →</button>
+</div>
+
+</div>
+
+<!-- PAGE: ENROLL AS PROFESSIONAL -->
+<div id="page-professional" class="page">
+
+<!-- QUICK ENROLLMENT -->
+<section id="professionals" class="py-20 px-6 bg-primary/5 border-y border-primary/10">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="font-heading text-3xl md:text-4xl font-bold mb-3">
+        Ready to Grow Your Career?
+      </h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">
+        Join thousands of professionals earning more by connecting with clients on BuildSmart
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Enroll as Engineer -->
+      <div class="bg-white rounded-2xl p-8 border border-primary/20 text-center hover:shadow-[0_8px_30px_-2px_rgba(93,112,82,0.2)] transition-all duration-300">
+        <div class="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-4xl">🏗️</div>
+        <h3 class="font-heading text-xl font-bold mb-2">Enroll as Engineer</h3>
+        <p class="text-gray-600 text-sm mb-6">Structural, Electrical, HVAC, MEP & more. Reach clients seeking your expertise.</p>
+        <button class="w-full bg-primary text-white rounded-full py-2.5 font-semibold hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_15px_-2px_rgba(93,112,82,0.2)]" onclick="navigateTo('professional')">Start Enrolling</button>
+      </div>
+
+      <!-- Enroll as Designer -->
+      <div class="bg-white rounded-2xl p-8 border border-secondary/20 text-center hover:shadow-[0_8px_30px_-2px_rgba(193,140,93,0.2)] transition-all duration-300">
+        <div class="w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-4xl">🎨</div>
+        <h3 class="font-heading text-xl font-bold mb-2">Enroll as Designer</h3>
+        <p class="text-gray-600 text-sm mb-6">Interior, Landscape, 3D Visualization. Showcase your portfolio & attract clients.</p>
+        <button class="w-full bg-secondary text-white rounded-full py-2.5 font-semibold hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_15px_-2px_rgba(193,140,93,0.2)]" onclick="navigateTo('professional')">Start Enrolling</button>
+      </div>
+
+      <!-- Enroll as Plumber -->
+      <div class="bg-white rounded-2xl p-8 border border-accent/20 text-center hover:shadow-[0_8px_30px_-2px_rgba(230,220,205,0.2)] transition-all duration-300">
+        <div class="w-16 h-16 bg-accent/40 rounded-2xl flex items-center justify-center mx-auto mb-4 text-4xl">🔧</div>
+        <h3 class="font-heading text-xl font-bold mb-2">Enroll as Plumber</h3>
+        <p class="text-gray-600 text-sm mb-6">Installation, Emergency, Gas. Connect with builders & homeowners daily.</p>
+        <button class="w-full bg-primary text-white rounded-full py-2.5 font-semibold hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_15px_-2px_rgba(93,112,82,0.2)]" onclick="navigateTo('professional')">Start Enrolling</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROFESSIONAL ENROLLMENT DETAILS -->
+<section class="py-32 px-6 bg-white">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="font-heading text-4xl md:text-5xl font-bold mb-4">
+        Professional Enrollment - Complete Details
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Everything you need to know before enrolling as an engineer, designer, or plumber.
+      </p>
+    </div>
+
+    <!-- Requirements -->
+    <div class="mb-16">
+      <h3 class="font-heading text-3xl font-bold mb-10 text-center">Enrollment Requirements</h3>
+      <div class="grid md:grid-cols-4 gap-6">
+        <div class="bg-primary/5 rounded-2xl p-8 border border-primary/20">
+          <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 text-2xl">📋</div>
+          <h4 class="font-heading font-bold text-lg mb-3">Valid License</h4>
+          <p class="text-gray-600 text-sm">Current professional license or certification in your field. We verify all credentials.</p>
+        </div>
+
+        <div class="bg-primary/5 rounded-2xl p-8 border border-primary/20">
+          <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 text-2xl">🛡️</div>
+          <h4 class="font-heading font-bold text-lg mb-3">Insurance Coverage</h4>
+          <p class="text-gray-600 text-sm">General liability and/or professional insurance. Protects you and your clients.</p>
+        </div>
+
+        <div class="bg-primary/5 rounded-2xl p-8 border border-primary/20">
+          <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 text-2xl">✅</div>
+          <h4 class="font-heading font-bold text-lg mb-3">Background Check</h4>
+          <p class="text-gray-600 text-sm">Clean background verification. Part of our commitment to quality & safety.</p>
+        </div>
+
+        <div class="bg-primary/5 rounded-2xl p-8 border border-primary/20">
+          <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 text-2xl">📇</div>
+          <h4 class="font-heading font-bold text-lg mb-3">Portfolio Ready</h4>
+          <p class="text-gray-600 text-sm">Prepare samples of your work, certifications, and professional references.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enrollment Steps -->
+    <div class="mb-16">
+      <h3 class="font-heading text-3xl font-bold mb-10 text-center">5-Step Enrollment Process</h3>
+      
+      <div class="grid md:grid-cols-5 gap-4 mb-12">
+        <div class="relative">
+          <div class="bg-white rounded-2xl p-6 border-2 border-primary shadow-lg text-center">
+            <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-3 font-heading font-bold text-lg">1</div>
+            <h4 class="font-heading font-bold mb-2">Account Setup</h4>
+            <p class="text-xs text-gray-600">Create account & profile in 5 minutes</p>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="bg-white rounded-2xl p-6 border-2 border-primary/40 shadow-lg text-center">
+            <div class="w-10 h-10 bg-primary/40 text-white rounded-full flex items-center justify-center mx-auto mb-3 font-heading font-bold text-lg">2</div>
+            <h4 class="font-heading font-bold mb-2">Document Upload</h4>
+            <p class="text-xs text-gray-600">Submit license, insurance, references</p>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="bg-white rounded-2xl p-6 border-2 border-primary/40 shadow-lg text-center">
+            <div class="w-10 h-10 bg-primary/40 text-white rounded-full flex items-center justify-center mx-auto mb-3 font-heading font-bold text-lg">3</div>
+            <h4 class="font-heading font-bold mb-2">Verification</h4>
+            <p class="text-xs text-gray-600">We verify credentials (24-48 hours)</p>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="bg-white rounded-2xl p-6 border-2 border-primary/40 shadow-lg text-center">
+            <div class="w-10 h-10 bg-primary/40 text-white rounded-full flex items-center justify-center mx-auto mb-3 font-heading font-bold text-lg">4</div>
+            <h4 class="font-heading font-bold mb-2">Profile Build</h4>
+            <p class="text-xs text-gray-600">Add portfolio, rates, availability</p>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="bg-white rounded-2xl p-6 border-2 border-primary shadow-lg text-center">
+            <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-3 font-heading font-bold text-lg">5</div>
+            <h4 class="font-heading font-bold mb-2">Launch Profile</h4>
+            <p class="text-xs text-gray-600">Go live & start getting inquiries!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <p class="text-gray-600 mb-6">⏱️ <strong>Total time to enrollment: 2-3 days</strong></p>
+        <button class="bg-primary text-white rounded-full px-12 py-3 font-semibold hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_15px_-2px_rgba(93,112,82,0.2)]">
+          Begin Your Enrollment
+        </button>
+      </div>
+    </div>
+
+    <!-- Pricing & Plans -->
+    <div class="mb-16">
+      <h3 class="font-heading text-3xl font-bold mb-10 text-center">Membership Plans & Pricing</h3>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Starter Plan -->
+        <div class="bg-muted/30 rounded-2xl p-8 border border-primary/20">
+          <h4 class="font-heading text-2xl font-bold mb-2">Starter</h4>
+          <p class="text-gray-600 text-sm mb-6">Perfect for getting started</p>
+          
+          <div class="mb-6">
+            <p class="text-4xl font-heading font-bold text-primary">Free</p>
+            <p class="text-xs text-gray-500 mt-1">Forever free, limited features</p>
+          </div>
+
+          <div class="bg-white rounded-xl p-4 mb-6 space-y-3">
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-primary font-bold">✓</span>
+              <span>Basic profile & portfolio</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-primary font-bold">✓</span>
+              <span>Respond to inquiries</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-primary font-bold">✓</span>
+              <span>Limited project listings</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-gray-400">
+              <span>✗</span>
+              <span>Analytics dashboard</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-gray-400">
+              <span>✗</span>
+              <span>Priority support</span>
+            </div>
+          </div>
+
+          <button class="w-full border-2 border-primary text-primary rounded-full py-2.5 font-semibold hover:bg-primary hover:text-white transition-all duration-300">
+            Start Free
+          </button>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="bg-white rounded-2xl p-8 border-2 border-primary shadow-2xl relative">
+          <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-xs font-bold">MOST POPULAR</div>
+          
+          <h4 class="font-heading text-2xl font-bold mb-2">Professional</h4>
+          <p class="text-gray-600 text-sm mb-6">For active professionals</p>
+          
+          <div class="mb-6">
+            <p class="text-4xl font-heading font-bold text-primary">$29<span class="text-lg text-gray-500">/mo</span></p>
+            <p class="text-xs text-gray-500 mt-1">Billed monthly, cancel anytime</p>
+          </div>
+
+          <div class="bg-primary/5 rounded-xl p-4 mb-6 space-y-3">
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-primary font-bold">✓</span>
+              <span>Everything in Starter, plus:</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-primary font-bold">✓</span>
+              <span>Unlimited project listings</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-primary font-bold">✓</span>
+              <span>Analytics & insights</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-primary font-bold">✓</span>
+              <span>Message templates</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-primary font-bold">✓</span>
+              <span>Email support (24h response)</span>
+            </div>
+          </div>
+
+          <button class="w-full bg-primary text-white rounded-full py-2.5 font-semibold hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_15px_-2px_rgba(93,112,82,0.2)]">
+            Start Pro Trial
+          </button>
+        </div>
+
+        <!-- Premium Plan -->
+        <div class="bg-muted/30 rounded-2xl p-8 border border-secondary/20">
+          <h4 class="font-heading text-2xl font-bold mb-2">Premium</h4>
+          <p class="text-gray-600 text-sm mb-6">For established firms</p>
+          
+          <div class="mb-6">
+            <p class="text-4xl font-heading font-bold text-secondary">$99<span class="text-lg text-gray-500">/mo</span></p>
+            <p class="text-xs text-gray-500 mt-1">Billed monthly, save with annual</p>
+          </div>
+
+          <div class="bg-white rounded-xl p-4 mb-6 space-y-3">
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-secondary font-bold">✓</span>
+              <span>Everything in Pro, plus:</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-secondary font-bold">✓</span>
+              <span>Advanced analytics</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-secondary font-bold">✓</span>
+              <span>Featured profile badge</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-secondary font-bold">✓</span>
+              <span>Priority customer support</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-secondary font-bold">✓</span>
+              <span>Team member accounts</span>
+            </div>
+          </div>
+
+          <button class="w-full border-2 border-secondary text-secondary rounded-full py-2.5 font-semibold hover:bg-secondary hover:text-white transition-all duration-300">
+            Start Premium Trial
+          </button>
+        </div>
+      </div>
+
+      <p class="text-center text-sm text-gray-500 mt-8">💳 No credit card required to start. Free 14-day trial on Pro and Premium plans.</p>
+    </div>
+
+    <!-- Enrollment FAQs -->
+    <div class="bg-accent/10 rounded-3xl p-12">
+      <h3 class="font-heading text-3xl font-bold mb-8 text-center">Enrollment FAQs</h3>
+
+      <div class="space-y-4 max-w-3xl mx-auto">
+        <div class="bg-white rounded-2xl p-6 border border-border/50">
+          <h4 class="font-heading font-bold text-lg mb-2">How long does verification take?</h4>
+          <p class="text-gray-600 text-sm">Most professionals are verified within 24-48 hours. During peak times, it may take up to 3 business days.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-border/50">
+          <h4 class="font-heading font-bold text-lg mb-2">What if my license is from another state/country?</h4>
+          <p class="text-gray-600 text-sm">We verify licenses from all US states and most countries. International professionals welcome! Contact support for specific regions.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-border/50">
+          <h4 class="font-heading font-bold text-lg mb-2">Can I hide my rates and discuss them privately?</h4>
+          <p class="text-gray-600 text-sm">Yes! You can list general rate ranges publicly or keep rates private. All detailed pricing is discussed directly with clients.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-border/50">
+          <h4 class="font-heading font-bold text-lg mb-2">What's your commission/fee structure?</h4>
+          <p class="text-gray-600 text-sm">We take 0% commission on direct payments. If using our secure payment system, it's only 2-3%. Complete transparency, no hidden fees.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-border/50">
+          <h4 class="font-heading font-bold text-lg mb-2">Can I cancel my membership anytime?</h4>
+          <p class="text-gray-600 text-sm">Yes! No contracts. Cancel anytime with no penalties. Your profile stays active through the end of your billing period.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-border/50">
+          <h4 class="font-heading font-bold text-lg mb-2">How do I get more clients/inquiries?</h4>
+          <p class="text-gray-600 text-sm">Maintain a great profile, respond quickly to messages, collect reviews, and keep your portfolio updated. Premium members get featured prominently.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Page Navigation -->
+<div class="page-nav">
+  <button onclick="navigateTo('professional')">← Enroll as Professional</button>
+  <button onclick="navigateTo('firm')">Register Your Firm →</button>
+</div>
+
+</div>
+<div id="page-firm" class="page">
+
+<!-- FIRM REGISTRATION DETAILS -->
+<section class="py-32 px-6 bg-gradient-to-br from-secondary/10 to-primary/5">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="font-heading text-4xl md:text-5xl font-bold mb-4">
+        Firm Registration - Complete Details
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Step-by-step guide, requirements, and pricing for registering your construction or design firm.
+      </p>
+    </div>
+
+    <!-- Firm Registration Requirements -->
+    <div class="mb-16">
+      <h3 class="font-heading text-3xl font-bold mb-10 text-center">What's Required to Register</h3>
+      <div class="grid md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-2xl p-8 border border-border/50 shadow-[0_2px_12px_-2px_rgba(93,112,82,0.1)]">
+          <div class="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-4 text-2xl">🏢</div>
+          <h4 class="font-heading font-bold text-lg mb-3">Business License</h4>
+          <p class="text-gray-600 text-sm">Current business license and registration in your state</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-8 border border-border/50 shadow-[0_2px_12px_-2px_rgba(93,112,82,0.1)]">
+          <div class="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-4 text-2xl">📄</div>
+          <h4 class="font-heading font-bold text-lg mb-3">Insurance Docs</h4>
+          <p class="text-gray-600 text-sm">General liability & workers' comp insurance proof</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-8 border border-border/50 shadow-[0_2px_12px_-2px_rgba(93,112,82,0.1)]">
+          <div class="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-4 text-2xl">👥</div>
+          <h4 class="font-heading font-bold text-lg mb-3">Owner Info</h4>
+          <p class="text-gray-600 text-sm">Business owner & key stakeholder information</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-8 border border-border/50 shadow-[0_2px_12px_-2px_rgba(93,112,82,0.1)]">
+          <div class="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mb-4 text-2xl">📋</div>
+          <h4 class="font-heading font-bold text-lg mb-3">Portfolio</h4>
+          <p class="text-gray-600 text-sm">Past projects, case studies, references</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Firm Registration Steps -->
+    <div class="mb-16">
+      <h3 class="font-heading text-3xl font-bold mb-10 text-center">Firm Registration Process</h3>
+      
+      <div class="grid md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-2xl p-8 border-2 border-secondary shadow-lg">
+          <div class="w-10 h-10 bg-secondary text-white rounded-full flex items-center justify-center mb-4 font-heading font-bold text-lg">1</div>
+          <h4 class="font-heading font-bold text-lg mb-3">Company Details</h4>
+          <p class="text-gray-600 text-sm">Provide business name, contact, location, service areas (10 min)</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-8 border-2 border-secondary/40 shadow-lg">
+          <div class="w-10 h-10 bg-secondary/40 text-white rounded-full flex items-center justify-center mb-4 font-heading font-bold text-lg">2</div>
+          <h4 class="font-heading font-bold text-lg mb-3">Document Upload</h4>
+          <p class="text-gray-600 text-sm">Upload business license, insurance, ownership docs (Verified 24-48h)</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-8 border-2 border-secondary/40 shadow-lg">
+          <div class="w-10 h-10 bg-secondary/40 text-white rounded-full flex items-center justify-center mb-4 font-heading font-bold text-lg">3</div>
+          <h4 class="font-heading font-bold text-lg mb-3">Profile Setup</h4>
+          <p class="text-gray-600 text-sm">Add company description, portfolio, team, services</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-8 border-2 border-secondary shadow-lg">
+          <div class="w-10 h-10 bg-secondary text-white rounded-full flex items-center justify-center mb-4 font-heading font-bold text-lg">4</div>
+          <h4 class="font-heading font-bold text-lg mb-3">Go Live!</h4>
+          <p class="text-gray-600 text-sm">Post projects, connect with professionals, access opportunities</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Firm Pricing Plans -->
+    <div class="grid md:grid-cols-3 gap-8 mb-16">
+      <!-- Starter Firm -->
+      <div class="bg-white rounded-2xl p-8 border border-secondary/20 shadow-[0_4px_15px_-2px_rgba(93,112,82,0.1)]">
+        <h4 class="font-heading text-2xl font-bold mb-2">Starter Firm</h4>
+        <p class="text-gray-600 text-sm mb-6">For small companies getting started</p>
+        
+        <div class="mb-6">
+          <p class="text-4xl font-heading font-bold text-secondary">Free</p>
+          <p class="text-xs text-gray-500 mt-1">Lifetime free account</p>
+        </div>
+
+        <ul class="space-y-3 mb-8">
+          <li class="flex items-center gap-2 text-sm">
+            <span class="text-secondary font-bold">✓</span>
+            <span>Company profile</span>
+          </li>
+          <li class="flex items-center gap-2 text-sm">
+            <span class="text-secondary font-bold">✓</span>
+            <span>Up to 5 active projects</span>
+          </li>
+          <li class="flex items-center gap-2 text-sm">
+            <span class="text-secondary font-bold">✓</span>
+            <span>Search professionals</span>
+          </li>
+          <li class="flex items-center gap-2 text-sm text-gray-400">
+            <span>✗</span>
+            <span>Team member accounts</span>
+          </li>
+          <li class="flex items-center gap-2 text-sm text-gray-400">
+            <span>✗</span>
+            <span>Advanced analytics</span>
+          </li>
+        </ul>
+
+        <button class="w-full border-2 border-secondary text-secondary rounded-full py-2.5 font-semibold hover:bg-secondary hover:text-white transition-all duration-300">
+          Register Free
+        </button>
+      </div>
+
+      <!-- Pro Firm -->
+      <div class="bg-white rounded-2xl p-8 border-2 border-secondary shadow-2xl relative">
+        <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary text-white px-4 py-1 rounded-full text-xs font-bold">RECOMMENDED</div>
+        
+        <h4 class="font-heading text-2xl font-bold mb-2">Professional Firm</h4>
+        <p class="text-gray-600 text-sm mb-6">For growing firms</p>
+        
+        <div class="mb-6">
+          <p class="text-4xl font-heading font-bold text-secondary">$49<span class="text-lg text-gray-500">/mo</span></p>
+          <p class="text-xs text-gray-500 mt-1">Billed monthly, save 20% annually</p>
+        </div>
+
+        <ul class="space-y-3 mb-8">
+          <li class="flex items-center gap-2 text-sm">
+            <span class="text-secondary font-bold">✓</span>
+            <span>Everything in Starter, plus:</span>
+          </li>
+          <li class="flex items-center gap-2 text-sm">
+            <span class="text-secondary font-bold">✓</span>
+            <span>Unlimited projects</span>
+          </li>
+          <li class="flex items-center gap-2 text-sm">
+            <span class="text-secondary font-bold">✓</span>
+            <span>3 team member accounts</span>
+          </li>
+          <li class="flex items-center gap-2 text-sm">
+            <span class="text-secondary font-bold">✓</span>
+            <span>Advanced search filters</span>
+          </li>
+          <li class="flex items-center gap-2 text-sm">
+            <span class="text-secondary font-bold">✓</span>
+            <span>Priority support</span>
+          </li>
+        </ul>
+
+        <button class="w-full bg-secondary text-white rounded-full py-2.5 font-semibold hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_15px_-2px_rgba(193,140,93,0.2)]">
+          Start Free Trial
+        </button>
+      </div>
+
+      <!-- Enterprise Firm -->
+      <div class="bg-white rounded-2xl p-8 border border-secondary/20 shadow-[0_4px_15px_-2px_rgba(93,112,82,0.1)]">
+        <h4 class="font-heading text-2xl font-bold mb-2">Enterprise Firm</h4>
+        <p class="text-gray-600 text-sm mb-6">For large established firms</p>
+        
+        <div class="mb-6">
+          <p class="text-4xl font-heading font-bold text-secondary">Custom</p>
+          <p class="text-xs text-gray-500 mt-1">Contact sales for pricing</p>
+        </div>
+
+        <ul class="space-y-3 mb-8">
+          <li class="flex items-center gap-2 text-sm">
+            <span class="text-secondary font-bold">✓</span>
+            <span>Everything in Pro, plus:</span>
+          </li>
+          <li class="flex items-center gap-2 text-sm">
+            <span class="text-secondary font-bold">✓</span>
+            <span>Unlimited team members</span>
+          </li>
+          <li class="flex items-center gap-2 text-sm">
+            <span class="text-secondary font-bold">✓</span>
+            <span>API access</span>
+          </li>
+          <li class="flex items-center gap-2 text-sm">
+            <span class="text-secondary font-bold">✓</span>
+            <span>Dedicated account manager</span>
+          </li>
+          <li class="flex items-center gap-2 text-sm">
+            <span class="text-secondary font-bold">✓</span>
+            <span>Custom integrations</span>
+          </li>
+        </ul>
+
+        <button class="w-full border-2 border-secondary text-secondary rounded-full py-2.5 font-semibold hover:bg-secondary hover:text-white transition-all duration-300">
+          Contact Sales
+        </button>
+      </div>
+    </div>
+
+    <!-- Firm FAQs -->
+    <div class="bg-white rounded-3xl p-12">
+      <h3 class="font-heading text-3xl font-bold mb-8 text-center">Firm Registration FAQs</h3>
+
+      <div class="space-y-4 max-w-3xl mx-auto">
+        <div class="bg-muted/30 rounded-2xl p-6 border border-border/50">
+          <h4 class="font-heading font-bold text-lg mb-2">Who can register?</h4>
+          <p class="text-gray-600 text-sm">Contractors, builders, architects, engineers, design studios, and trades. Any construction or design business.</p>
+        </div>
+
+        <div class="bg-muted/30 rounded-2xl p-6 border border-border/50">
+          <h4 class="font-heading font-bold text-lg mb-2">Can we add our team members?</h4>
+          <p class="text-gray-600 text-sm">Yes! Invite team members who get accounts with role-based access to company projects.</p>
+        </div>
+
+        <div class="bg-muted/30 rounded-2xl p-6 border border-border/50">
+          <h4 class="font-heading font-bold text-lg mb-2">How do we post projects?</h4>
+          <p class="text-gray-600 text-sm">Create detailed project posts with scope, timeline, budget & location. Professionals submit proposals within hours.</p>
+        </div>
+
+        <div class="bg-muted/30 rounded-2xl p-6 border border-border/50">
+          <h4 class="font-heading font-bold text-lg mb-2">Are professionals pre-vetted?</h4>
+          <p class="text-gray-600 text-sm">Yes! All professionals are pre-vetted. View ratings, certifications, insurance, and client reviews on their profile.</p>
+        </div>
+
+        <div class="bg-muted/30 rounded-2xl p-6 border border-border/50">
+          <h4 class="font-heading font-bold text-lg mb-2">Is there a minimum project value?</h4>
+          <p class="text-gray-600 text-sm">No! From small $500 jobs to $100K+ projects. BuildSmart works at all budget levels.</p>
+        </div>
+
+        <div class="bg-muted/30 rounded-2xl p-6 border border-border/50">
+          <h4 class="font-heading font-bold text-lg mb-2">How does payment work?</h4>
+          <p class="text-gray-600 text-sm">Pay directly or use our secure system with milestone-based payments, escrow services for large projects.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Page Navigation -->
+<div class="page-nav">
+  <button onclick="navigateTo('professional')">← Enroll as Professional</button>
+  <button onclick="navigateTo('directory')">Find Professionals →</button>
+</div>
+
+</div>
+
+<!-- PAGE: FIND PROFESSIONALS -->
+<div id="page-directory" class="page">
 
 <!-- SERVICES -->
 <section class="py-32 px-6">
@@ -135,7 +1048,7 @@ body::before {
 </section>
 
 <!-- DASHBOARD - PROFESSIONALS -->
-<section class="py-32 px-6 bg-accent/20">
+<section id="directory" class="py-32 px-6 bg-accent/20">
   <div class="max-w-7xl mx-auto">
     <div class="text-center mb-16">
       <h2 class="font-heading text-4xl md:text-5xl font-bold mb-4">
@@ -930,8 +1843,337 @@ body::before {
   </div>
 </section>
 
+<!-- REGISTER YOUR FIRM -->
+<section id="firms" class="py-32 px-6 bg-gradient-to-br from-secondary/10 to-primary/5">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+      <!-- Left Content -->
+      <div>
+        <h2 class="font-heading text-4xl md:text-5xl font-bold mb-6">
+          Register Your Construction Firm
+        </h2>
+        <p class="text-lg text-gray-600 mb-8">
+          Take your construction, design, or engineering business to the next level. Connect with verified professionals, expand your network, and access new project opportunities.
+        </p>
+
+        <div class="space-y-4 mb-10">
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 bg-primary text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">✓</div>
+            <div>
+              <h4 class="font-semibold text-lg">Access Verified Professionals</h4>
+              <p class="text-gray-600 text-sm">Connect with pre-vetted engineers, plumbers, designers & specialists</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 bg-primary text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">✓</div>
+            <div>
+              <h4 class="font-semibold text-lg">Post Project Requirements</h4>
+              <p class="text-gray-600 text-sm">Describe your needs and receive competitive bids from qualified professionals</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 bg-primary text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">✓</div>
+            <div>
+              <h4 class="font-semibold text-lg">Manage Your Team</h4>
+              <p class="text-gray-600 text-sm">Track projects, communicate with partners, and manage timelines from one dashboard</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 bg-primary text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">✓</div>
+            <div>
+              <h4 class="font-semibold text-lg">Expand Your Reach</h4>
+              <p class="text-gray-600 text-sm">Get exposure to thousands of homeowners and builders looking for your services</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 bg-primary text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">✓</div>
+            <div>
+              <h4 class="font-semibold text-lg">Build Your Reputation</h4>
+              <p class="text-gray-600 text-sm">Earn verified reviews and showcase completed projects to attract new business</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="bg-primary text-white rounded-full px-12 py-4 font-semibold text-lg hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_6px_20px_-2px_rgba(93,112,82,0.25)]">
+          Register Your Firm Now
+        </button>
+      </div>
+
+      <!-- Right Side - Firm Types Cards -->
+      <div class="space-y-4">
+        <div class="bg-white rounded-2xl p-8 border border-border/50 shadow-[0_4px_15px_-2px_rgba(93,112,82,0.1)] hover:shadow-[0_8px_25px_-2px_rgba(93,112,82,0.15)] transition-all duration-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-14 h-14 bg-primary/20 rounded-xl flex items-center justify-center text-3xl">🏢</div>
+            <h3 class="font-heading font-bold text-xl">General Contractors</h3>
+          </div>
+          <p class="text-gray-600 text-sm">Manage sub-contractors and specialists. Post jobs and receive bids from verified professionals.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-8 border border-border/50 shadow-[0_4px_15px_-2px_rgba(93,112,82,0.1)] hover:shadow-[0_8px_25px_-2px_rgba(93,112,82,0.15)] transition-all duration-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-14 h-14 bg-secondary/20 rounded-xl flex items-center justify-center text-3xl">🏗️</div>
+            <h3 class="font-heading font-bold text-xl">Engineering Firms</h3>
+          </div>
+          <p class="text-gray-600 text-sm">Find design partners, plumbers, and complimentary service providers for your projects.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-8 border border-border/50 shadow-[0_4px_15px_-2px_rgba(93,112,82,0.1)] hover:shadow-[0_8px_25px_-2px_rgba(93,112,82,0.15)] transition-all duration-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-14 h-14 bg-accent/40 rounded-xl flex items-center justify-center text-3xl">🎨</div>
+            <h3 class="font-heading font-bold text-xl">Design Studios</h3>
+          </div>
+          <p class="text-gray-600 text-sm">Connect with builders, contractors, and specialists to expand your service offerings.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-8 border border-border/50 shadow-[0_4px_15px_-2px_rgba(93,112,82,0.1)] hover:shadow-[0_8px_25px_-2px_rgba(93,112,82,0.15)] transition-all duration-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-3xl">🔨</div>
+            <h3 class="font-heading font-bold text-xl">Trade Companies</h3>
+          </div>
+          <p class="text-gray-600 text-sm">Plumbing, electrical, HVAC, and other trades. Find steady work through the platform.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FIRM NETWORKING & PARTNERSHIPS -->
+<section class="py-32 px-6 bg-gradient-to-r from-primary/5 to-secondary/5">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="font-heading text-4xl md:text-5xl font-bold mb-4">
+        Connect Your Firm With Top Professionals
+      </h2>
+      <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+        Construction firms and builders: expand your network, access specialized expertise, and scale your projects with verified professionals from engineers to plumbers.
+      </p>
+    </div>
+
+    <!-- Firm Benefits Grid -->
+    <div class="grid md:grid-cols-2 gap-8 mb-16">
+      <!-- For General Contractors -->
+      <div class="bg-white rounded-3xl p-10 border border-border/50 shadow-[0_4px_20px_-2px_rgba(93,112,82,0.1)]">
+        <div class="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mb-6 text-4xl">🏗️</div>
+        <h3 class="font-heading text-2xl font-bold mb-4">For General Contractors</h3>
+        <p class="text-gray-600 mb-6">Build a reliable network of sub-contractors and specialists for every project need.</p>
+        
+        <div class="space-y-3 mb-8">
+          <div class="flex items-start gap-3">
+            <span class="text-primary font-bold mt-1">✓</span>
+            <div>
+              <p class="font-semibold text-sm">Find Vetted Specialists</p>
+              <p class="text-xs text-gray-500">Structural engineers, electricians, plumbers & more</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-primary font-bold mt-1">✓</span>
+            <div>
+              <p class="font-semibold text-sm">Post Job Requirements</p>
+              <p class="text-xs text-gray-500">Describe your project and get bids from pre-approved professionals</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-primary font-bold mt-1">✓</span>
+            <div>
+              <p class="font-semibold text-sm">Compare & Collaborate</p>
+              <p class="text-xs text-gray-500">Review portfolios, rates, and past projects before hiring</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-primary font-bold mt-1">✓</span>
+            <div>
+              <p class="font-semibold text-sm">Streamlined Communication</p>
+              <p class="text-xs text-gray-500">Built-in messaging and project tracking tools</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-primary font-bold mt-1">✓</span>
+            <div>
+              <p class="font-semibold text-sm">Payment Protection</p>
+              <p class="text-xs text-gray-500">Secure payments and contract management through BuildSmart</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="w-full bg-primary text-white rounded-full py-3 font-semibold hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_15px_-2px_rgba(93,112,82,0.2)]">
+          List Your Requirements
+        </button>
+      </div>
+
+      <!-- For Engineering & Design Firms -->
+      <div class="bg-white rounded-3xl p-10 border border-border/50 shadow-[0_4px_20px_-2px_rgba(93,112,82,0.1)]">
+        <div class="w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center mb-6 text-4xl">🎯</div>
+        <h3 class="font-heading text-2xl font-bold mb-4">For Design & Engineering Firms</h3>
+        <p class="text-gray-600 mb-6">Partner with complementary professionals to offer comprehensive solutions to clients.</p>
+        
+        <div class="space-y-3 mb-8">
+          <div class="flex items-start gap-3">
+            <span class="text-secondary font-bold mt-1">✓</span>
+            <div>
+              <p class="font-semibold text-sm">Build Strategic Partnerships</p>
+              <p class="text-xs text-gray-500">Connect with engineers, designers, and contractors</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-secondary font-bold mt-1">✓</span>
+            <div>
+              <p class="font-semibold text-sm">Expand Service Offerings</p>
+              <p class="text-xs text-gray-500">Offer full-service solutions through professional partnerships</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-secondary font-bold mt-1">✓</span>
+            <div>
+              <p class="font-semibold text-sm">Access Project Opportunities</p>
+              <p class="text-xs text-gray-500">Get referrals from builders and contractors on the platform</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-secondary font-bold mt-1">✓</span>
+            <div>
+              <p class="font-semibold text-sm">Collaborative Workspace</p>
+              <p class="text-xs text-gray-500">Share drawings, specs, and coordinate with your team</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-secondary font-bold mt-1">✓</span>
+            <div>
+              <p class="font-semibold text-sm">Reputation Management</p>
+              <p class="text-xs text-gray-500">Showcase work and build credibility through reviews</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="w-full bg-secondary text-white rounded-full py-3 font-semibold hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_4px_15px_-2px_rgba(193,140,93,0.2)]">
+          Find Partners
+        </button>
+      </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="bg-white rounded-3xl p-12 border border-border/50 mb-16">
+      <h3 class="font-heading text-2xl font-bold mb-10 text-center">How Firms Connect & Collaborate</h3>
+      
+      <div class="grid md:grid-cols-4 gap-6">
+        <div class="text-center">
+          <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4 font-heading font-bold text-lg">1</div>
+          <h4 class="font-heading font-bold text-lg mb-2">Search & Browse</h4>
+          <p class="text-sm text-gray-600">Find professionals by specialty, location, experience level, and ratings</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4 font-heading font-bold text-lg">2</div>
+          <h4 class="font-heading font-bold text-lg mb-2">Connect & Request</h4>
+          <p class="text-sm text-gray-600">Send project requirements and get professional proposals from qualified professionals</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4 font-heading font-bold text-lg">3</div>
+          <h4 class="font-heading font-bold text-lg mb-2">Review & Select</h4>
+          <p class="text-sm text-gray-600">Compare portfolios, timelines, and pricing before making your decision</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4 font-heading font-bold text-lg">4</div>
+          <h4 class="font-heading font-bold text-lg mb-2">Collaborate & Deliver</h4>
+          <p class="text-sm text-gray-600">Use our tools to manage projects, track progress, and ensure quality delivery</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Network Statistics -->
+    <div class="grid md:grid-cols-4 gap-6 mb-16">
+      <div class="bg-white rounded-2xl p-8 text-center border border-border/50">
+        <p class="text-4xl font-heading font-bold text-primary mb-2">2,847</p>
+        <p class="text-gray-600 text-sm">Active Firms Connected</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-8 text-center border border-border/50">
+        <p class="text-4xl font-heading font-bold text-secondary mb-2">12,500+</p>
+        <p class="text-gray-600 text-sm">Professional Partnerships</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-8 text-center border border-border/50">
+        <p class="text-4xl font-heading font-bold text-primary mb-2">$500M+</p>
+        <p class="text-gray-600 text-sm">Project Value Connected</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-8 text-center border border-border/50">
+        <p class="text-4xl font-heading font-bold text-secondary mb-2">98%</p>
+        <p class="text-gray-600 text-sm">Satisfaction Rate</p>
+      </div>
+    </div>
+
+    <!-- Featured Firm Partnerships -->
+    <div>
+      <h3 class="font-heading text-2xl font-bold mb-10 text-center">Recent Successful Connections</h3>
+      
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-muted/30 rounded-2xl p-8 border border-border/30">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h4 class="font-heading font-bold text-lg">Pinnacle Construction</h4>
+              <p class="text-xs text-gray-500">Commercial Builder • 45+ projects</p>
+            </div>
+            <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-lg">🏢</div>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">"BuildSmart helped us find the perfect structural engineer for our complex downtown project. The vetting process saved us so much time!"</p>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-semibold">Connected with:</span>
+            <span class="text-xs bg-primary/10 text-primary rounded-full px-3 py-1">Structural Eng.</span>
+            <span class="text-xs bg-secondary/10 text-secondary rounded-full px-3 py-1">MEP Eng.</span>
+          </div>
+        </div>
+
+        <div class="bg-muted/30 rounded-2xl p-8 border border-border/30">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h4 class="font-heading font-bold text-lg">Studio Design Group</h4>
+              <p class="text-xs text-gray-500">Design Firm • 120+ residential</p>
+            </div>
+            <div class="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center text-lg">🎨</div>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">"We now have reliable partners for all our projects. The collaboration tools make coordinating multiple professionals seamless."</p>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-semibold">Connected with:</span>
+            <span class="text-xs bg-primary/10 text-primary rounded-full px-3 py-1">Landscaping</span>
+            <span class="text-xs bg-secondary/10 text-secondary rounded-full px-3 py-1">Lighting</span>
+          </div>
+        </div>
+
+        <div class="bg-muted/30 rounded-2xl p-8 border border-border/30">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h4 class="font-heading font-bold text-lg">ProBuild Solutions</h4>
+              <p class="text-xs text-gray-500">General Contractor • 200+ projects</p>
+            </div>
+            <div class="w-10 h-10 bg-accent/40 rounded-full flex items-center justify-center text-lg">🔨</div>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">"Finding qualified plumbers and electricians has never been easier. All pre-vetted, insured, and rated by other contractors."</p>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-semibold">Connected with:</span>
+            <span class="text-xs bg-primary/10 text-primary rounded-full px-3 py-1">Plumbing</span>
+            <span class="text-xs bg-secondary/10 text-secondary rounded-full px-3 py-1">Electrical</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Page Navigation -->
+<div class="page-nav">
+  <button onclick="navigateTo('professional')">← Enroll as Professional</button>
+  <button onclick="navigateTo('firm')">Register Your Firm →</button>
+</div>
+
+</div>
+
+<!-- PAGE: CONTACT -->
+<div id="page-contact" class="page">
+
 <!-- CTA -->
-<section class="py-32 px-6 bg-primary text-white text-center relative overflow-hidden">
+<section id="contact" class="py-32 px-6 bg-primary text-white text-center relative overflow-hidden">
   <div class="absolute inset-0 opacity-20 blur-3xl bg-secondary rounded-[50%_50%_70%_30%/30%_70%_30%_70%]"></div>
   <div class="relative z-10 max-w-3xl mx-auto">
     <h2 class="font-heading text-4xl md:text-5xl font-bold mb-6">
@@ -940,11 +2182,19 @@ body::before {
     <p class="mb-8">
       Connect with trusted professionals and begin your journey today.
     </p>
-    <button class="bg-white text-primary rounded-full px-10 h-14 font-semibold hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_10px_40px_-10px_rgba(193,140,93,0.2)]">
+    <button class="bg-white text-primary rounded-full px-10 h-14 font-semibold hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_10px_40px_-10px_rgba(193,140,93,0.2)]" onclick="navigateTo('directory')">
       Get Started
     </button>
   </div>
 </section>
+
+<!-- Page Navigation -->
+<div class="page-nav">
+  <button onclick="navigateTo('directory')">← Find Professionals</button>
+  <button onclick="navigateTo('firm')">← Register Your Firm</button>
+</div>
+
+</div>
 
 <!-- FOOTER -->
 <footer class="py-12 text-center text-sm text-gray-500">
